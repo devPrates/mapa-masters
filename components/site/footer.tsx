@@ -33,7 +33,7 @@ export function Footer() {
               <span className="text-gradient-gold text-sm font-bold">Masters</span>
             </div>
             <p className="mt-4 max-w-sm text-sm text-white/60">
-              Comunidade Contabilidade Digital — a rede nacional de contadores parceiros formada
+              Comunidade Contadores Digitais — a rede nacional de contadores parceiros formada
               pelo método CCD.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
@@ -97,7 +97,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/40 md:flex-row">
           <span>
-            © {new Date().getFullYear()} CCD — Comunidade Contabilidade Digital. Todos os direitos
+            © {new Date().getFullYear()} CCD — Comunidade Contadores Digitais. Todos os direitos
             reservados.
           </span>
         </div>

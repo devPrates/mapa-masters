@@ -18,7 +18,7 @@ export function Hero() {
   const { goToSection } = useSectionNav()
 
   return (
-    <section className="relative flex min-h-[92vh] items-center overflow-hidden bg-gradient-to-b from-ccd-navy via-ccd-navy to-ccd-navy-darker md:min-h-screen">
+    <section className="relative flex min-h-[92vh] items-center overflow-hidden bg-linear-to-b from-ccd-navy via-ccd-navy to-ccd-navy-darker md:min-h-screen">
       <motion.div
         aria-hidden
         className="absolute -top-24 -left-24 size-96 rounded-full bg-ccd-teal opacity-20 blur-3xl"
@@ -34,7 +34,7 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 pt-28 pb-20 text-center md:px-8">
         <Reveal className="flex justify-center">
-          <Badge variant="inverted">Comunidade Contabilidade Digital</Badge>
+          <Badge variant="inverted">Comunidade Contadores Digitais</Badge>
         </Reveal>
 
         <Reveal delay={0.1}>
@@ -56,7 +56,7 @@ export function Hero() {
             variant="ghost"
             size="lg"
             nativeButton={false}
-            className="h-11 rounded-xl bg-gradient-to-r from-ccd-teal to-ccd-teal-light px-6 text-white hover:opacity-90"
+            className="h-11 rounded-xl bg-linear-to-r from-ccd-teal to-ccd-teal-light px-6 text-white hover:opacity-90"
             render={<a href="#masters" onClick={goToSection('masters')} />}
           >
             Ver Masters no mapa

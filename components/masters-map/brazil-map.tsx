@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StateCode } from './types';
-import { stateNames, masters } from './data';
+import { masters } from './data';
 import { Loader } from '@/components/ui/loader';
 
 interface BrazilMapProps {
@@ -153,82 +153,49 @@ export function BrazilMap({ selectedState, onStateChange }: BrazilMapProps) {
   const attachStateListeners = () => {
     // Get the map holder - where Simplemaps renders
     const mapHolder = document.querySelector('#map_holder');
-    
+
     if (!mapHolder) return;
 
-    // Create a mapping of state code to data attributes or look for an alternate way to get state IDs
-    // The Raphael-rendered SVG elements might have title or other attributes
-    const allElements = mapHolder.querySelectorAll('svg, *');
-    
-    // We'll intercept state data to add our own hover and click handlers
-    // Look for states in the SVG and attach listeners using data attributes or by index
     attachMapHandlers(mapHolder);
+  };
+
+  // Simplemaps tags each state's rendered element with a class like
+  // "sm_state sm_state_BRSP" - the suffix is the exact state code used
+  // throughout this app. Reading it directly is the reliable way to know
+  // which state an element represents (DOM order between labels and paths
+  // is not guaranteed to match, which was the source of the mismatch bug).
+  const getStateCodeFromElement = (el: Element): string | null => {
+    const match = el.getAttribute('class')?.match(/\bsm_state_(\w+)/);
+    return match ? match[1] : null;
   };
 
   const attachMapHandlers = (mapHolder: Element) => {
     // Use a timeout to ensure the map is fully rendered
     let attempts = 0;
     const tryAttach = () => {
-      // Look for text elements which contain state names
-      const texts = mapHolder.querySelectorAll('text');
-      const stateTexts = Array.from(texts).filter((t) =>
-        Object.values(stateNames).includes(t.textContent || '')
-      );
+      const stateElements = Array.from(mapHolder.querySelectorAll('[class*="sm_state_"]'));
 
-      if (stateTexts.length > 10) {
-        // Found state text labels - create a mapping
-        const stateIndexMap = new Map<number, string>();
-        stateTexts.forEach((textElement, index) => {
-          const stateName = textElement.textContent || '';
-          const stateCode = Object.keys(stateNames).find(
-            (code) => stateNames[code] === stateName
-          );
-          if (stateCode) {
-            stateIndexMap.set(index, stateCode);
-          }
-        });
+      if (stateElements.length > 10) {
+        stateElements.forEach((el) => {
+          const stateCode = getStateCodeFromElement(el);
+          if (!stateCode) return;
 
-        // Get the main SVG with state paths (should be the 2nd or larger SVG)
-        const svgs = Array.from(mapHolder.querySelectorAll('svg'));
-        let mainSvg: SVGElement | null = null;
-
-        // Find the SVG with the most paths (the one with the states)
-        svgs.forEach((svg) => {
-          const pathCount = svg.querySelectorAll('path').length;
-          if (pathCount > 10 && !mainSvg) {
-            mainSvg = svg as SVGElement;
-          }
-        });
-
-        if (mainSvg) {
-          const paths = Array.from(mainSvg.querySelectorAll('path'));
-          let stateIndex = 0;
-
-          // Attach listeners to each path in order
-          paths.forEach((path) => {
-            if (stateIndexMap.has(stateIndex)) {
-              const stateCode = stateIndexMap.get(stateIndex)!;
-
-              // Attach click listener - clicking the already-selected state deselects it
-              path.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const next = selectedStateRef.current === stateCode ? null : (stateCode as StateCode);
-                onStateChangeRef.current(next);
-              });
-
-              // Attach hover effects
-              path.addEventListener('mouseenter', () => {
-                (path as SVGElement).style.cursor = 'pointer';
-              });
-
-              path.addEventListener('mouseleave', () => {
-                (path as SVGElement).style.cursor = 'default';
-              });
-
-              stateIndex++;
-            }
+          // Attach click listener - clicking the already-selected state deselects it
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const next = selectedStateRef.current === stateCode ? null : (stateCode as StateCode);
+            onStateChangeRef.current(next);
           });
-        }
+
+          // Attach hover effects
+          el.addEventListener('mouseenter', () => {
+            (el as SVGElement).style.cursor = 'pointer';
+          });
+
+          el.addEventListener('mouseleave', () => {
+            (el as SVGElement).style.cursor = 'default';
+          });
+        });
       } else if (attempts < 15) {
         attempts++;
         setTimeout(tryAttach, 300);
@@ -243,54 +210,21 @@ export function BrazilMap({ selectedState, onStateChange }: BrazilMapProps) {
     const mapHolder = document.querySelector('#map_holder');
     if (!mapHolder) return;
 
-    const texts = mapHolder.querySelectorAll('text');
-    const stateIndexMap = new Map<number, string>();
-    
-    // Build the state index map
-    let indexCount = 0;
-    texts.forEach((textElement) => {
-      const stateName = textElement.textContent || '';
-      const stateCode = Object.keys(stateNames).find(
-        (code) => stateNames[code] === stateName
-      );
-      if (stateCode) {
-        stateIndexMap.set(indexCount, stateCode);
-        indexCount++;
-      }
-    });
-
-    // Find the main SVG
-    const svgs = Array.from(mapHolder.querySelectorAll('svg'));
-    let mainSvg: SVGElement | null = null;
-
-    svgs.forEach((svg) => {
-      const pathCount = svg.querySelectorAll('path').length;
-      if (pathCount > 10 && !mainSvg) {
-        mainSvg = svg as SVGElement;
-      }
-    });
-
     const statesWithMasters = new Set(Object.keys(masters));
+    const stateElements = Array.from(mapHolder.querySelectorAll('[class*="sm_state_"]'));
 
-    if (mainSvg) {
-      const paths = Array.from(mainSvg.querySelectorAll('path'));
-      let stateIndex = 0;
+    stateElements.forEach((el) => {
+      const stateCode = getStateCodeFromElement(el);
+      if (!stateCode) return;
 
-      paths.forEach((path) => {
-        if (stateIndexMap.has(stateIndex)) {
-          const stateCode = stateIndexMap.get(stateIndex)!;
-
-          if (selectedState === stateCode) {
-            (path as SVGElement).style.fill = MAP_COLORS.selected;
-          } else if (statesWithMasters.has(stateCode)) {
-            (path as SVGElement).style.fill = MAP_COLORS.withMaster;
-          } else {
-            (path as SVGElement).style.fill = MAP_COLORS.withoutMaster;
-          }
-          stateIndex++;
-        }
-      });
-    }
+      if (selectedState === stateCode) {
+        (el as SVGElement).style.fill = MAP_COLORS.selected;
+      } else if (statesWithMasters.has(stateCode)) {
+        (el as SVGElement).style.fill = MAP_COLORS.withMaster;
+      } else {
+        (el as SVGElement).style.fill = MAP_COLORS.withoutMaster;
+      }
+    });
   }, [selectedState]);
 
   return (

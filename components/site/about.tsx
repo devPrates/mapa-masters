@@ -14,7 +14,7 @@ export function About() {
         <Reveal direction="left">
           <Badge variant="teal">Quem criou a CCD</Badge>
           <h2 className="mt-4 text-3xl font-bold text-ccd-ink md:text-4xl">
-            Anderson Maisse — o contador por trás da Comunidade Contabilidade Digital
+            Anderson Maisse — o contador por trás da Comunidade Contadores Digitais
           </h2>
           <p className="mt-5 text-ccd-ink/70">
             Contador, mentor e palestrante, Anderson Maisse já impactou mais de 3.000 contadores

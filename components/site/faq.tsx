@@ -13,12 +13,12 @@ const faqs = [
   {
     pergunta: 'Quem é Anderson Maisse?',
     resposta:
-      'Anderson Maisse é contador, mentor, palestrante e criador do CCD (Comunidade Contabilidade Digital). Com mais de 15 anos de experiência, já ajudou mais de 3.000 contadores a transformarem seus escritórios em negócios lucrativos e escaláveis.',
+      'Anderson Maisse é contador, mentor, palestrante e criador do CCD (Comunidade Contadores Digitais). Com mais de 15 anos de experiência, já ajudou mais de 3.000 contadores a transformarem seus escritórios em negócios lucrativos e escaláveis.',
   },
   {
     pergunta: 'O que é o CCD?',
     resposta:
-      'CCD (Comunidade Contabilidade Digital) é o método comprovado criado por Anderson Maisse que traz mais clientes, multiplica o faturamento e tira o contador do operacional, com resultados em 4 semanas.',
+      'CCD (Comunidade Contadores Digitais) é o método comprovado criado por Anderson Maisse que traz mais clientes, multiplica o faturamento e tira o contador do operacional, com resultados em 4 semanas.',
   },
   {
     pergunta: 'Anderson Maisse faz palestras?',
@@ -28,7 +28,7 @@ const faqs = [
   {
     pergunta: 'Quais cursos Anderson Maisse oferece?',
     resposta:
-      'Anderson Maisse oferece diversos cursos e programas: CCD (Comunidade Contabilidade Digital), Contabilidade Digital 360, Vendas pelo YouTube, Guia de Precificação, Guia de Processos, Manual Rápido da Contabilidade Digital, além de mentorias em grupo e VIP.',
+      'Anderson Maisse oferece diversos cursos e programas: CCD (Comunidade Contadores Digitais), Contabilidade Digital 360, Vendas pelo YouTube, Guia de Precificação, Guia de Processos, Manual Rápido da Contabilidade Digital, além de mentorias em grupo e VIP.',
   },
 ]
 

@@ -36,7 +36,7 @@ export function ProgramaStats() {
             Resultados que os alunos do método CCD já conquistaram
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-ccd-ink/60">
-            Números registrados pelos próprios alunos da Comunidade Contabilidade Digital.
+            Números registrados pelos próprios alunos da Comunidade Contadores Digitais.
           </p>
         </Reveal>
 
