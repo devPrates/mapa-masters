@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
@@ -44,10 +45,7 @@ export function Header({ variant = 'transparent' }: HeaderProps) {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-8">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-ccd-gold to-ccd-gold-light text-sm font-bold text-ccd-navy">
-            CCD
-          </span>
-          <span className="text-gradient-gold text-sm font-bold">Masters</span>
+          <Image src="/logo-masters.png" alt="Masters CCD" width={52} height={52} priority />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
