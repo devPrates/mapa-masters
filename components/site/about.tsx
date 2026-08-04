@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Reveal } from '@/components/ui/reveal'
+import { AboutCarousel } from './about-carousel'
 
 const chips = ['15+ anos de experiência', '3.000+ contadores impactados', 'ABSCON · CRCs · SESCONs']
 
@@ -40,18 +40,7 @@ export function About() {
         </Reveal>
 
         <Reveal direction="right">
-          <div className="relative flex aspect-square items-center justify-center rounded-[2rem] bg-gradient-to-br from-ccd-navy to-ccd-teal">
-            {/* Placeholder — do NOT hotlink a real photo of Anderson Maisse from his
-                domain. Replace with a licensed/owned asset in public/ when available. */}
-            <Avatar className="size-32 ring-4 ring-white/20 md:size-40">
-              <AvatarFallback className="bg-white/10 text-4xl text-white">AM</AvatarFallback>
-            </Avatar>
-
-            <div className="absolute -bottom-6 left-6 rounded-2xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur-md">
-              <p className="font-semibold text-ccd-ink">Anderson Maisse</p>
-              <p className="text-xs text-ccd-ink/60">Fundador · Mentor · Palestrante</p>
-            </div>
-          </div>
+          <AboutCarousel />
         </Reveal>
       </div>
     </section>
