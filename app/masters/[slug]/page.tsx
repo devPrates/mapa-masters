@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { AtSign, Award, CheckCircle2, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { AtSign, Award, Mail, MapPin, MessageCircle } from 'lucide-react';
 
 import { BackToMapLink } from '@/components/site/back-to-map-link';
 import { Footer } from '@/components/site/footer';
@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { masters, stateNames } from '@/components/masters-map/data';
 import { MasterCard } from '@/components/masters-map/master-card';
+import { MasterProductsCarousel } from '@/components/masters-map/master-products-carousel';
 import { Master, StateCode } from '@/components/masters-map/types';
 
 interface MasterDetailPageProps {
@@ -84,8 +85,8 @@ export default async function MasterDetailPage({ params }: MasterDetailPageProps
         </p>
       </div>
 
-      <section className="relative mt-6 overflow-hidden rounded-b-[2.5rem] bg-gradient-to-br from-ccd-navy to-ccd-teal py-16 text-white md:py-20">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 text-center md:flex-row md:text-left">
+      <section className="relative mx-auto mt-6 max-w-6xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-ccd-navy to-ccd-teal px-4 py-16 text-white md:px-8 md:py-20">
+        <div className="flex flex-col items-center gap-8 text-center md:flex-row md:text-left">
           <Avatar className="size-32 shrink-0 ring-4 ring-white/20 md:size-40">
             <AvatarImage src={master.foto} alt={master.nome} />
             <AvatarFallback className="bg-white/10 text-3xl text-white">
@@ -124,26 +125,7 @@ export default async function MasterDetailPage({ params }: MasterDetailPageProps
             </p>
           </div>
 
-          <div>
-            <h2 className="text-xl font-semibold text-ccd-ink">Produtos e Serviços</h2>
-            {master.produtos && master.produtos.length > 0 ? (
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                {master.produtos.map((produto) => (
-                  <div key={produto.nome} className="rounded-2xl border border-ccd-border p-5">
-                    <CheckCircle2 className="size-5 text-ccd-teal" />
-                    <p className="mt-3 font-semibold text-ccd-ink">{produto.nome}</p>
-                    {produto.descricao && (
-                      <p className="mt-1 text-sm text-ccd-ink/60">{produto.descricao}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-3 text-sm text-ccd-ink/50">
-                Em breve, mais informações sobre os serviços deste Master.
-              </p>
-            )}
-          </div>
+          <MasterProductsCarousel produtos={master.produtos ?? []} />
         </div>
 
         <div className="md:col-span-1">

@@ -4,9 +4,24 @@ import { Badge } from '@/components/ui/badge'
 import { Reveal } from '@/components/ui/reveal'
 
 const depoimentos = [
-  { src: '/depoimento-01.jpeg', alt: 'Print de depoimento via WhatsApp — prova social 1' },
-  { src: '/depoimento-02.jpeg', alt: 'Print de depoimento via WhatsApp — prova social 2' },
-  { src: '/depoimento-03.jpeg', alt: 'Print de depoimento via WhatsApp — prova social 3' },
+  {
+    src: '/depoimento-02.jpeg',
+    alt: 'Print de depoimento via WhatsApp — prova social 2',
+    width: 589,
+    height: 1280,
+  },
+  {
+    src: '/depoimento-01.jpeg',
+    alt: 'Print de depoimento via WhatsApp — prova social 1',
+    width: 932,
+    height: 1600,
+  },
+  {
+    src: '/depoimento-03.jpeg',
+    alt: 'Print de depoimento via WhatsApp — prova social 3',
+    width: 760,
+    height: 1600,
+  },
 ]
 
 export function Testimonials() {
@@ -28,13 +43,16 @@ export function Testimonials() {
         <div className="mt-14 grid gap-6 md:grid-cols-3">
           {depoimentos.map((depoimento, index) => (
             <Reveal key={depoimento.src} delay={index * 0.1}>
-              <div className="relative h-[420px] overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md md:h-[480px]">
+              <div
+                className="relative overflow-hidden rounded-3xl border border-white/10 shadow-lg"
+                style={{ aspectRatio: `${depoimento.width} / ${depoimento.height}` }}
+              >
                 <Image
                   src={depoimento.src}
                   alt={depoimento.alt}
                   fill
                   sizes="(min-width: 768px) 360px, 100vw"
-                  className="object-contain"
+                  className="object-cover"
                 />
               </div>
             </Reveal>

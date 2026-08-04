@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { useSectionNav } from '@/hooks/use-section-nav'
@@ -26,12 +27,9 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 md:px-8">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2">
-              <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-ccd-teal to-ccd-teal-light text-sm font-bold text-white">
-                CCD
-              </span>
-              <span className="text-gradient-gold text-sm font-bold">Masters</span>
-            </div>
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/logo-masters.png" alt="Masters CCD" width={52} height={52} />
+            </Link>
             <p className="mt-4 max-w-sm text-sm text-white/60">
               Comunidade Contadores Digitais — a rede nacional de contadores parceiros formada
               pelo método CCD.

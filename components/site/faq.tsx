@@ -59,12 +59,12 @@ export function Faq() {
         <p className="mt-8 text-center text-sm text-ccd-ink/60">
           Ainda tem dúvidas? Conheça o método completo em{' '}
           <Link
-            href="https://andersonmaisse.com/ccdlesp/"
+            href="https://andersonmaisse.com/b"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-ccd-teal"
           >
-            andersonmaisse.com/ccdlesp
+            andersonmaisse.com/b
           </Link>
         </p>
       </div>
