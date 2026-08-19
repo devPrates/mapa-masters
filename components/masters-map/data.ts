@@ -1,3 +1,8 @@
+// @ts-nocheck
+// Backup: dados fictícios anteriores, substituídos por data-masters.ts (dados reais
+// extraídos de lib/Mentores Master - Cadastros.csv). Mantido só como referência —
+// não é mais importado em nenhum lugar do site. O modelo Master mudou (ver types.ts),
+// por isso o ts-nocheck: esses dados antigos não seguem mais a shape atual.
 import { Master, MasterProduct, StateMasters, StateNames } from './types';
 
 const produtosPadrao: MasterProduct[] = [

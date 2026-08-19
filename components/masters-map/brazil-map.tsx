@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StateCode } from './types';
-import { masters } from './data';
+import { masters } from './data-masters';
 import { Loader } from '@/components/ui/loader';
 
 interface BrazilMapProps {

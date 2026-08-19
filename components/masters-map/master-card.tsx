@@ -11,6 +11,13 @@ interface MasterCardProps {
   index: number;
 }
 
+function initials(nome: string): string {
+  const parts = nome.trim().split(/\s+/);
+  const first = parts[0]?.[0] ?? '';
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+  return (first + last).toUpperCase();
+}
+
 export function MasterCard({ master, index }: MasterCardProps) {
   const router = useRouter();
 
@@ -28,12 +35,18 @@ export function MasterCard({ master, index }: MasterCardProps) {
       <div className="flex gap-3 h-full">
         {/* Photo - Left Side */}
         <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-xl bg-ccd-mist ring-1 ring-ccd-border">
-          <Image
-            src={master.foto}
-            alt={master.nome}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-300"
-          />
+          {master.foto ? (
+            <Image
+              src={master.foto}
+              alt={master.nome}
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-300"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center font-semibold text-ccd-navy">
+              {initials(master.nome)}
+            </div>
+          )}
         </div>
 
         {/* Content - Right Side */}

@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { MasterCard } from './master-card';
 import { Master, StateCode } from './types';
-import { masters, stateNames } from './data';
+import { masters, stateNames } from './data-masters';
 
 interface StatePanelProps {
   selectedState: StateCode | null;

@@ -1,5 +1,5 @@
 import { MastersMap } from '@/components/masters-map'
-import { masters } from '@/components/masters-map/data'
+import { masters } from '@/components/masters-map/data-masters'
 import { Badge } from '@/components/ui/badge'
 import { Reveal } from '@/components/ui/reveal'
 

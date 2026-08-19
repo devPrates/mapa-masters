@@ -44,9 +44,6 @@ export function MasterProductsCarousel({ produtos }: MasterProductsCarouselProps
                   </div>
                   <div>
                     <p className="text-lg font-semibold">{produto.nome}</p>
-                    {produto.descricao && (
-                      <p className="mt-2 text-sm text-white/80">{produto.descricao}</p>
-                    )}
                   </div>
                 </div>
               </CarouselItem>

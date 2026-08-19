@@ -1,24 +1,37 @@
 export interface MasterProduct {
   nome: string;
-  descricao?: string;
+}
+
+export type ContactType = 'email' | 'telefone';
+
+export interface MasterContact {
+  typeContact: ContactType;
+  valor: string;
+  observacao?: string;
 }
 
 export interface Master {
   id: number;
   nome: string;
-  empresa: string;
-  foto: string;
   slug: string;
-  cidade?: string;
-  especialidade?: string;
-  bio?: string;
-  whatsapp?: string;
-  email?: string;
+  uf: string;
+  cidade: string;
+  empresa: string;
+  especialidade: string[];
+  publicoTipo: string;
+  nichoDescricao: string[];
+  tempoAtuacao: string;
+  bio: string;
+  produtos: MasterProduct[];
+  comoAjuda: string;
+  contatos: MasterContact[];
   instagram?: string;
-  produtos?: MasterProduct[];
+  youtube?: string;
+  site?: string;
+  foto: string;
 }
 
-export type StateCode = 
+export type StateCode =
   | 'BRAC' | 'BRAL' | 'BRAM' | 'BRAP' | 'BRBA' | 'BRCE' | 'BRDF'
   | 'BRES' | 'BRGO' | 'BRMA' | 'BRMG' | 'BRMS' | 'BRMT' | 'BRPA'
   | 'BRPB' | 'BRPE' | 'BRPI' | 'BRPR' | 'BRRJ' | 'BRRN' | 'BRRO'

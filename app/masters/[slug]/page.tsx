@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { AtSign, Award, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { AtSign, Award, Globe, Mail, MapPin, MessageCircle, PlayCircle } from 'lucide-react';
 
 import { BackToMapLink } from '@/components/site/back-to-map-link';
 import { Footer } from '@/components/site/footer';
 import { Header } from '@/components/site/header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { masters, stateNames } from '@/components/masters-map/data';
+import { masters, stateNames } from '@/components/masters-map/data-masters';
 import { MasterCard } from '@/components/masters-map/master-card';
 import { MasterProductsCarousel } from '@/components/masters-map/master-products-carousel';
 import { Master, StateCode } from '@/components/masters-map/types';
@@ -34,6 +34,10 @@ function initials(nome: string): string {
   const first = parts[0]?.[0] ?? '';
   const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
   return (first + last).toUpperCase();
+}
+
+function toExternalHref(value: string): string {
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
 }
 
 export async function generateMetadata({ params }: MasterDetailPageProps): Promise<Metadata> {
@@ -72,7 +76,9 @@ export default async function MasterDetailPage({ params }: MasterDetailPageProps
           .filter((m) => m.slug !== slug)
           .slice(0, 3);
 
-  const hasContact = Boolean(master.whatsapp || master.email || master.instagram);
+  const hasContact = Boolean(
+    master.contatos.length > 0 || master.instagram || master.youtube || master.site,
+  );
 
   return (
     <div className="min-h-screen bg-white">
@@ -101,15 +107,15 @@ export default async function MasterDetailPage({ params }: MasterDetailPageProps
               {master.cidade && (
                 <Badge variant="inverted">
                   <MapPin className="size-3" />
-                  {master.cidade}
+                  {master.cidade}, {master.uf}
                 </Badge>
               )}
-              {master.especialidade && (
-                <Badge variant="inverted">
+              {master.especialidade.map((item) => (
+                <Badge key={item} variant="inverted">
                   <Award className="size-3" />
-                  {master.especialidade}
+                  {item}
                 </Badge>
-              )}
+              ))}
             </div>
           </div>
         </div>
@@ -133,25 +139,34 @@ export default async function MasterDetailPage({ params }: MasterDetailPageProps
             <h2 className="text-sm font-semibold text-ccd-ink">Contato</h2>
             {hasContact ? (
               <div className="space-y-3 text-sm">
-                {master.whatsapp && (
-                  <a
-                    href={`https://wa.me/${master.whatsapp}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
-                  >
-                    <MessageCircle className="size-4" />
-                    WhatsApp
-                  </a>
-                )}
-                {master.email && (
-                  <a
-                    href={`mailto:${master.email}`}
-                    className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
-                  >
-                    <Mail className="size-4" />
-                    {master.email}
-                  </a>
+                {master.contatos.map((contato, index) =>
+                  contato.typeContact === 'email' ? (
+                    <a
+                      key={`${contato.typeContact}-${index}`}
+                      href={`mailto:${contato.valor}`}
+                      className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
+                    >
+                      <Mail className="size-4" />
+                      {contato.valor}
+                      {contato.observacao && (
+                        <span className="text-xs text-ccd-ink/40">({contato.observacao})</span>
+                      )}
+                    </a>
+                  ) : (
+                    <a
+                      key={`${contato.typeContact}-${index}`}
+                      href={`https://wa.me/${contato.valor.replace(/\D/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
+                    >
+                      <MessageCircle className="size-4" />
+                      {contato.valor}
+                      {contato.observacao && (
+                        <span className="text-xs text-ccd-ink/40">({contato.observacao})</span>
+                      )}
+                    </a>
+                  ),
                 )}
                 {master.instagram && (
                   <a
@@ -161,6 +176,28 @@ export default async function MasterDetailPage({ params }: MasterDetailPageProps
                     className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
                   >
                     <AtSign className="size-4" />@{master.instagram}
+                  </a>
+                )}
+                {master.youtube && (
+                  <a
+                    href={toExternalHref(master.youtube)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
+                  >
+                    <PlayCircle className="size-4" />
+                    YouTube
+                  </a>
+                )}
+                {master.site && (
+                  <a
+                    href={toExternalHref(master.site)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
+                  >
+                    <Globe className="size-4" />
+                    Site
                   </a>
                 )}
               </div>
