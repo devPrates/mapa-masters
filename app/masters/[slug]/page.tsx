@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { AtSign, Award, Globe, Mail, MapPin, MessageCircle, PlayCircle } from 'lucide-react';
+import type { ReactNode } from 'react';
+import Image from 'next/image';
+import { Globe, MapPin } from 'lucide-react';
 
 import { BackToMapLink } from '@/components/site/back-to-map-link';
 import { Footer } from '@/components/site/footer';
@@ -38,6 +40,40 @@ function initials(nome: string): string {
 
 function toExternalHref(value: string): string {
   return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
+const INSTAGRAM_BASE_URL = 'https://www.instagram.com';
+const YOUTUBE_BASE_URL = 'https://www.youtube.com';
+
+interface ContactButtonProps {
+  href: string;
+  label: string;
+  observacao?: string;
+  iconSrc?: string;
+  icon?: ReactNode;
+}
+
+function ContactButton({ href, label, observacao, iconSrc, icon }: ContactButtonProps) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-3 rounded-xl border border-ccd-border bg-white px-4 py-3 text-ccd-ink transition hover:border-ccd-teal hover:shadow-sm"
+    >
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-ccd-mist">
+        {iconSrc ? (
+          <Image src={iconSrc} alt="" width={20} height={20} className="size-5" />
+        ) : (
+          icon
+        )}
+      </span>
+      <span className="flex flex-col">
+        <span className="text-sm font-semibold">{label}</span>
+        {observacao && <span className="text-xs text-ccd-ink/50">{observacao}</span>}
+      </span>
+    </a>
+  );
 }
 
 export async function generateMetadata({ params }: MasterDetailPageProps): Promise<Metadata> {
@@ -84,23 +120,22 @@ export default async function MasterDetailPage({ params }: MasterDetailPageProps
     <div className="min-h-screen bg-white">
       <Header variant="solid" />
 
-      <div className="mx-auto max-w-5xl px-4 pt-24">
-        <BackToMapLink />
-        <p className="mt-2 text-xs text-ccd-ink/40">
-          Masters CCD / {stateName} / {master.nome}
-        </p>
+      <div className="pt-24">
+        <div className="mx-auto max-w-6xl px-4 py-6 md:px-8">
+          <BackToMapLink />
+        </div>
       </div>
 
-      <section className="relative mx-auto mt-6 max-w-6xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-ccd-navy to-ccd-teal px-4 py-16 text-white md:px-8 md:py-20">
+      <section className="relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-ccd-navy to-ccd-teal px-4 py-8 text-white md:px-8 md:py-10">
         <div className="flex flex-col items-center gap-8 text-center md:flex-row md:text-left">
-          <Avatar className="size-32 shrink-0 ring-4 ring-white/20 md:size-40">
+          <Avatar className="size-32 shrink-0 rounded-3xl ring-4 ring-white/20 md:size-40">
             <AvatarImage src={master.foto} alt={master.nome} />
             <AvatarFallback className="bg-white/10 text-3xl text-white">
               {initials(master.nome)}
             </AvatarFallback>
           </Avatar>
 
-          <div>
+          <div className="md:flex-1">
             <h1 className="text-3xl font-bold md:text-4xl">{master.nome}</h1>
             <p className="mt-1 text-white/80">{master.empresa}</p>
             <div className="mt-4 flex flex-wrap justify-center gap-2 md:justify-start">
@@ -110,16 +145,28 @@ export default async function MasterDetailPage({ params }: MasterDetailPageProps
                   {master.cidade}, {master.uf}
                 </Badge>
               )}
-              {master.especialidade.map((item) => (
-                <Badge key={item} variant="inverted">
-                  <Award className="size-3" />
-                  {item}
-                </Badge>
-              ))}
             </div>
           </div>
+
+          {master.logo && (
+            <div className="relative h-14 w-36 shrink-0 md:mr-6 md:h-16 md:w-40">
+              <Image
+                src={master.logo}
+                alt={master.empresa}
+                fill
+                sizes="160px"
+                className="object-contain"
+              />
+            </div>
+          )}
         </div>
       </section>
+
+      <div className="mx-auto max-w-5xl px-4 pt-6">
+        <p className="text-xs text-ccd-ink/40">
+          Masters CCD / {stateName} / {master.nome}
+        </p>
+      </div>
 
       <div className="mx-auto grid max-w-5xl gap-10 px-4 py-12 md:grid-cols-3">
         <div className="space-y-10 md:col-span-2">
@@ -136,69 +183,44 @@ export default async function MasterDetailPage({ params }: MasterDetailPageProps
 
         <div className="md:col-span-1">
           <div className="sticky top-24 space-y-3 rounded-2xl border border-ccd-border bg-ccd-mist p-6">
-            <h2 className="text-sm font-semibold text-ccd-ink">Contato</h2>
+            <h2 className="text-lg font-bold text-ccd-ink">Contatos</h2>
             {hasContact ? (
-              <div className="space-y-3 text-sm">
+              <div className="grid gap-2">
                 {master.contatos.map((contato, index) =>
                   contato.typeContact === 'email' ? (
-                    <a
+                    <ContactButton
                       key={`${contato.typeContact}-${index}`}
                       href={`mailto:${contato.valor}`}
-                      className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
-                    >
-                      <Mail className="size-4" />
-                      {contato.valor}
-                      {contato.observacao && (
-                        <span className="text-xs text-ccd-ink/40">({contato.observacao})</span>
-                      )}
-                    </a>
+                      label="E-mail"
+                      observacao={contato.observacao}
+                      iconSrc="/icones/gmail.svg"
+                    />
                   ) : (
-                    <a
+                    <ContactButton
                       key={`${contato.typeContact}-${index}`}
                       href={`https://wa.me/${contato.valor.replace(/\D/g, '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
-                    >
-                      <MessageCircle className="size-4" />
-                      {contato.valor}
-                      {contato.observacao && (
-                        <span className="text-xs text-ccd-ink/40">({contato.observacao})</span>
-                      )}
-                    </a>
+                      label="WhatsApp"
+                      observacao={contato.observacao}
+                      iconSrc="/icones/whatsapp.svg"
+                    />
                   ),
                 )}
                 {master.instagram && (
-                  <a
-                    href={`https://instagram.com/${master.instagram}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
-                  >
-                    <AtSign className="size-4" />@{master.instagram}
-                  </a>
+                  <ContactButton
+                    href={`${INSTAGRAM_BASE_URL}/${master.instagram}`}
+                    label="Instagram"
+                    iconSrc="/icones/instagram.svg"
+                  />
                 )}
                 {master.youtube && (
-                  <a
-                    href={toExternalHref(master.youtube)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
-                  >
-                    <PlayCircle className="size-4" />
-                    YouTube
-                  </a>
+                  <ContactButton
+                    href={`${YOUTUBE_BASE_URL}/${master.youtube}`}
+                    label="YouTube"
+                    iconSrc="/icones/youtube.svg"
+                  />
                 )}
                 {master.site && (
-                  <a
-                    href={toExternalHref(master.site)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-ccd-ink/70 hover:text-ccd-teal"
-                  >
-                    <Globe className="size-4" />
-                    Site
-                  </a>
+                  <ContactButton href={toExternalHref(master.site)} label="Site" icon={<Globe className="size-5" />} />
                 )}
               </div>
             ) : (

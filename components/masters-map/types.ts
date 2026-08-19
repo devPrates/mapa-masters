@@ -29,6 +29,7 @@ export interface Master {
   youtube?: string;
   site?: string;
   foto: string;
+  logo?: string;
 }
 
 export type StateCode =
