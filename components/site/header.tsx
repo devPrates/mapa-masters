@@ -39,7 +39,7 @@ export function Header({ variant = 'transparent' }: HeaderProps) {
       className={cn(
         'fixed inset-x-0 top-0 z-50 transition-colors duration-300',
         isSolid
-          ? 'border-b border-ccd-border bg-white/90 backdrop-blur-md'
+          ? 'border-b border-ccd-border bg-white/95' // sem backdrop-blur: era refeito a cada frame de scroll
           : 'border-b border-transparent bg-transparent',
       )}
     >

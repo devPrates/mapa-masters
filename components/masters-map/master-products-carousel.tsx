@@ -74,7 +74,7 @@ function ProductCard({ produto, index }: { produto: MasterProduct; index: number
       onClick={() => !ativo && scrollTo(index)}
       style={{ '--accent': look.accent } as CSSProperties}
       className={cn(
-        'flex h-full flex-col rounded-3xl border bg-ccd-navy p-5 text-center transition-all duration-500 ease-out md:p-6',
+        'flex h-full flex-col rounded-3xl border bg-ccd-navy p-5 text-center transition-[transform,opacity,box-shadow,border-color] duration-500 ease-out md:p-6',
         ativo
           ? 'scale-100 border-[color-mix(in_srgb,var(--accent)_55%,transparent)] opacity-100 shadow-[0_30px_70px_-25px_color-mix(in_srgb,var(--accent)_55%,transparent)]'
           : 'scale-[0.94] cursor-pointer border-white/10 opacity-50 hover:opacity-75',

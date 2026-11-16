@@ -133,7 +133,7 @@ export function Hero() {
           para o parallax não revelar borda. */}
       <div data-hero-bg-wrap className="absolute inset-x-0 -top-[10%] h-[120%] will-change-transform">
         <Image
-          src="/hero-bg.jpeg"
+          src="/hero-bg-blur.jpg"
           alt=""
           aria-hidden
           fill
@@ -141,7 +141,7 @@ export function Hero() {
           loading="eager"
           fetchPriority="high"
           data-hero-bg
-          className="scale-105 object-cover blur-[3px]"
+          className="scale-105 object-cover"
         />
       </div>
       {/* Overlay navy: mais escuro no centro (atrás do texto) e na base */}

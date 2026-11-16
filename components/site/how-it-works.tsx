@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, type ComponentType } from 'react'
+import { useEffect, useRef, useState, type ComponentType } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -63,22 +63,45 @@ const STEPS = pillars.length - 1
 
 export function HowItWorks() {
   const sectionRef = useRef<HTMLElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<ScrollTrigger | null>(null)
   const [active, setActive] = useState(0)
-  const [leituras, setLeituras] = useState<string[]>(() => pillars.map(() => ''))
+  // Leitura das figuras: guardada em ref e escrita direto no DOM. Com estado
+  // React, cada pixel de mouse sobre a figura re-renderizava a seção inteira
+  // (8 figuras Hairline) — era a principal fonte de travadas aqui.
+  const leiturasRef = useRef<string[]>(pillars.map(() => ''))
+  const leituraElRef = useRef<HTMLSpanElement>(null)
+  const activeRef = useRef(0)
+
+  const mostrarLeitura = (index: number) => {
+    const el = leituraElRef.current
+    if (!el) return
+    const texto = leiturasRef.current[index]
+    el.textContent = texto ? `leitura ${texto}` : 'aguardando cursor'
+  }
+
+  useEffect(() => {
+    activeRef.current = active
+    mostrarLeitura(active)
+  }, [active])
 
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
 
-      // Só no desktop: a seção fica presa na tela e o scroll troca os pilares.
-      // No mobile o layout é uma lista de cards (sem pin).
+      // Só no desktop: o palco fica preso na tela (position: sticky, nativo)
+      // enquanto o trilho alto passa, e o scroll troca os pilares.
+      // Não usamos `pin` do ScrollTrigger: o pin deixa o palco position: fixed
+      // com posições calculadas na montagem — se algo acima mudava de altura
+      // depois (fontes, imagens), o palco ficava fixo além do fim e cobria o Mapa
+      // no primeiro scroll. Com sticky o navegador solta o palco sozinho no fim.
+      // No mobile o layout é uma lista de cards.
       mm.add(
         { desktop: '(min-width: 1024px)', reduce: '(prefers-reduced-motion: reduce)' },
         (context) => {
           const { desktop, reduce } = context.conditions as { desktop: boolean; reduce: boolean }
-          if (!desktop || !stageRef.current) return
+          if (!desktop || !stageRef.current || !trackRef.current) return
 
           const slides = gsap.utils.toArray<HTMLElement>('[data-slide]', stageRef.current)
           const shift = reduce ? 0 : 48
@@ -86,10 +109,9 @@ export function HowItWorks() {
           const tl = gsap.timeline({
             defaults: { ease: 'none' },
             scrollTrigger: {
-              trigger: stageRef.current,
+              trigger: trackRef.current,
               start: 'top top',
-              end: () => `+=${window.innerHeight * STEPS}`,
-              pin: true,
+              end: 'bottom bottom',
               scrub: reduce ? true : 0.8,
               snap: {
                 snapTo: 1 / STEPS,
@@ -143,19 +165,16 @@ export function HowItWorks() {
     window.scrollTo({ top: st.start + ((st.end - st.start) * index) / STEPS, behavior: 'smooth' })
   }
 
-  const setLeitura = (index: number) => (texto: string) =>
-    setLeituras((prev) => {
-      if (prev[index] === texto) return prev
-      const next = [...prev]
-      next[index] = texto
-      return next
-    })
+  const setLeitura = (index: number) => (texto: string) => {
+    leiturasRef.current[index] = texto
+    if (activeRef.current === index) mostrarLeitura(index)
+  }
 
   return (
     <section
       ref={sectionRef}
       id="metodo"
-      className="relative min-h-svh scroll-mt-24 overflow-hidden bg-[radial-gradient(circle_at_top,_var(--ccd-navy)_0%,_var(--ccd-navy-darker)_70%)] pt-20 pb-20 text-white md:pt-28 lg:pb-0"
+      className="relative min-h-svh scroll-mt-24 overflow-clip bg-[radial-gradient(circle_at_top,_var(--ccd-navy)_0%,_var(--ccd-navy-darker)_70%)] pt-20 pb-20 text-white md:pt-28 lg:pb-0"
     >
       <div className="mx-auto max-w-6xl px-4 md:px-8">
         <Reveal className="text-center">
@@ -173,91 +192,95 @@ export function HowItWorks() {
       </div>
 
       {/* ---------- Desktop: palco preso na tela, controlado pelo scroll ---------- */}
-      <div ref={stageRef} className="hidden h-screen items-center pt-20 lg:flex">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-12 items-center gap-12 px-8">
-          {/* Lista de pilares + linha de progresso */}
-          <div className="col-span-5 flex gap-6">
-            <div aria-hidden className="relative w-px shrink-0 bg-white/10">
-              <div
-                data-progress
-                className="absolute inset-0 origin-top scale-y-0 bg-linear-to-b from-ccd-teal via-ccd-teal-light to-ccd-gold"
-              />
+      {/* Trilho: (pilares) × 100vh de rolagem; o palco sticky fica preso dentro dele.
+          overflow-clip na <section> (e não overflow-hidden) para o sticky funcionar. */}
+      <div ref={trackRef} className="hidden lg:block" style={{ height: `${pillars.length * 100}vh` }}>
+        <div ref={stageRef} className="sticky top-0 flex h-screen items-center pt-20">
+          <div className="mx-auto grid w-full max-w-6xl grid-cols-12 items-center gap-12 px-8">
+            {/* Lista de pilares + linha de progresso */}
+            <div className="col-span-5 flex gap-6">
+              <div aria-hidden className="relative w-px shrink-0 bg-white/10">
+                <div
+                  data-progress
+                  className="absolute inset-0 origin-top scale-y-0 bg-linear-to-b from-ccd-teal via-ccd-teal-light to-ccd-gold"
+                />
+              </div>
+
+              <ol className="flex flex-col gap-7">
+                {pillars.map((pillar, index) => {
+                  const isActive = active === index
+                  return (
+                    <li key={pillar.titulo}>
+                      <button
+                        type="button"
+                        onClick={() => goTo(index)}
+                        aria-current={isActive ? 'step' : undefined}
+                        className={cn(
+                          'group text-left transition-opacity duration-500',
+                          isActive ? 'opacity-100' : 'opacity-35 hover:opacity-70',
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            'font-mono text-xs tracking-widest transition-colors duration-500',
+                            isActive ? 'text-ccd-gold-light' : 'text-white/50',
+                          )}
+                        >
+                          {pillar.numero} / 0{pillars.length}
+                        </span>
+                        <h3 className="mt-1 text-2xl font-bold">{pillar.titulo}</h3>
+                        <p
+                          className={cn(
+                            'grid text-sm text-white/60 transition-all duration-500',
+                            isActive ? 'mt-2 grid-rows-[1fr]' : 'grid-rows-[0fr]',
+                          )}
+                        >
+                          <span className="overflow-hidden">{pillar.copy}</span>
+                        </p>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ol>
             </div>
 
-            <ol className="flex flex-col gap-7">
-              {pillars.map((pillar, index) => {
-                const isActive = active === index
-                return (
-                  <li key={pillar.titulo}>
-                    <button
-                      type="button"
-                      onClick={() => goTo(index)}
-                      aria-current={isActive ? 'step' : undefined}
-                      className={cn(
-                        'group text-left transition-opacity duration-500',
-                        isActive ? 'opacity-100' : 'opacity-35 hover:opacity-70',
-                      )}
+            {/* Painel com as figuras empilhadas (GSAP faz o crossfade) */}
+            <div className="col-span-7">
+              <div className="hairline-ccd-dark relative overflow-hidden rounded-[2rem] border border-white/10 bg-ccd-navy shadow-[0_30px_80px_rgba(2,22,39,0.6)]">
+                {/* Barra estilo HUD */}
+                <div className="flex items-center justify-between border-b border-white/10 px-6 py-3 font-mono text-[11px] tracking-widest text-white/40 uppercase">
+                  <span className="flex items-center gap-2">
+                    <span className="size-1.5 animate-pulse rounded-full bg-ccd-gold-light" />
+                    Método CCD · pilar {pillars[active].numero}
+                  </span>
+                  <span ref={leituraElRef} className="tabular-nums text-ccd-teal-light/80">
+                    aguardando cursor
+                  </span>
+                </div>
+
+                <div className="grid p-8">
+                  {pillars.map((pillar, index) => (
+                    <div
+                      key={pillar.titulo}
+                      data-slide
+                      className={cn('[grid-area:1/1]', index > 0 && 'invisible opacity-0')}
                     >
-                      <span
-                        className={cn(
-                          'font-mono text-xs tracking-widest transition-colors duration-500',
-                          isActive ? 'text-ccd-gold-light' : 'text-white/50',
-                        )}
-                      >
-                        {pillar.numero} / 0{pillars.length}
-                      </span>
-                      <h3 className="mt-1 text-2xl font-bold">{pillar.titulo}</h3>
-                      <p
-                        className={cn(
-                          'grid text-sm text-white/60 transition-all duration-500',
-                          isActive ? 'mt-2 grid-rows-[1fr]' : 'grid-rows-[0fr]',
-                        )}
-                      >
-                        <span className="overflow-hidden">{pillar.copy}</span>
-                      </p>
-                    </button>
-                  </li>
-                )
-              })}
-            </ol>
-          </div>
+                      <pillar.Figura
+                        theme="dark"
+                        intensity={0.65}
+                        play={active === index}
+                        label={pillar.label}
+                        onRead={setLeitura(index)}
+                        className="mx-auto w-full max-w-md"
+                      />
+                    </div>
+                  ))}
+                </div>
 
-          {/* Painel com as figuras empilhadas (GSAP faz o crossfade) */}
-          <div className="col-span-7">
-            <div className="hairline-ccd-dark relative overflow-hidden rounded-[2rem] border border-white/10 bg-ccd-navy shadow-[0_30px_80px_rgba(2,22,39,0.6)]">
-              {/* Barra estilo HUD */}
-              <div className="flex items-center justify-between border-b border-white/10 px-6 py-3 font-mono text-[11px] tracking-widest text-white/40 uppercase">
-                <span className="flex items-center gap-2">
-                  <span className="size-1.5 animate-pulse rounded-full bg-ccd-gold-light" />
-                  Método CCD · pilar {pillars[active].numero}
-                </span>
-                <span className="tabular-nums text-ccd-teal-light/80">
-                  {leituras[active] ? `leitura ${leituras[active]}` : 'aguardando cursor'}
-                </span>
+                <p className="border-t border-white/10 px-6 py-3 text-center font-mono text-[11px] tracking-widest text-white/35 uppercase">
+                  {pillars[active].dica}
+                </p>
               </div>
-
-              <div className="grid p-8">
-                {pillars.map((pillar, index) => (
-                  <div
-                    key={pillar.titulo}
-                    data-slide
-                    className={cn('[grid-area:1/1]', index > 0 && 'invisible opacity-0')}
-                  >
-                    <pillar.Figura
-                      theme="dark"
-                      intensity={0.65}
-                      play={active === index}
-                      label={pillar.label}
-                      onRead={setLeitura(index)}
-                      className="mx-auto w-full max-w-md"
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <p className="border-t border-white/10 px-6 py-3 text-center font-mono text-[11px] tracking-widest text-white/35 uppercase">
-                {pillars[active].dica}
-              </p>
             </div>
           </div>
         </div>

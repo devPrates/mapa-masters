@@ -10,7 +10,7 @@ const badgeVariants = cva(
         navy: 'border-ccd-navy/15 bg-ccd-navy/5 text-ccd-navy',
         teal: 'border-ccd-teal/20 bg-ccd-teal/10 text-ccd-teal',
         gold: 'border-ccd-gold/25 bg-ccd-gold/10 text-ccd-gold',
-        inverted: 'border-white/15 bg-white/10 text-white backdrop-blur-sm',
+        inverted: 'border-white/15 bg-white/10 text-white',
       },
     },
     defaultVariants: {
