@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Master } from './types';
 import { ArrowRight } from 'lucide-react';
 
@@ -19,12 +19,6 @@ function initials(nome: string): string {
 }
 
 export function MasterCard({ master, index }: MasterCardProps) {
-  const router = useRouter();
-
-  const handleClick = () => {
-    router.push(`/masters/${master.slug}`);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -40,6 +34,7 @@ export function MasterCard({ master, index }: MasterCardProps) {
               src={master.foto}
               alt={master.nome}
               fill
+              sizes="64px"
               className="object-cover group-hover:scale-110 transition-transform duration-300"
             />
           ) : (
@@ -60,13 +55,15 @@ export function MasterCard({ master, index }: MasterCardProps) {
             </p>
           </div>
 
-          <button
-            onClick={handleClick}
+          {/* Link (e não router.push): o Next pré-carrega a página do Master
+              quando o card aparece, então o clique abre na hora. */}
+          <Link
+            href={`/masters/${master.slug}`}
             className="inline-flex items-center gap-1.5 text-xs font-medium text-ccd-teal hover:text-ccd-gold transition-colors mt-2"
           >
             Conhecer
             <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-          </button>
+          </Link>
         </div>
       </div>
     </motion.div>

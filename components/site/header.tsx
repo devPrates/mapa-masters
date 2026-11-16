@@ -11,11 +11,11 @@ import { useSectionNav } from '@/hooks/use-section-nav'
 import { cn } from '@/lib/utils'
 
 const navLinks = [
+  { id: 'inicio', label: 'Home' },
   { id: 'sobre', label: 'Sobre' },
-  { id: 'metodo', label: 'Método' },
   { id: 'masters', label: 'Masters' },
+  { id: 'metodo', label: 'Método' },
   { id: 'resultados', label: 'Resultados' },
-  { id: 'faq', label: 'FAQ' },
 ]
 
 interface HeaderProps {

@@ -28,9 +28,9 @@ export function Testimonials() {
   return (
     <section
       id="depoimentos"
-      className="scroll-mt-24 overflow-hidden bg-ccd-navy-darker py-20 text-white md:py-28"
+      className="flex min-h-svh flex-col justify-center scroll-mt-24 overflow-hidden bg-ccd-navy-darker py-20 text-white md:py-28"
     >
-      <div className="mx-auto max-w-6xl px-4 md:px-8">
+      <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
         <Reveal className="text-center">
           <div className="flex justify-center">
             <Badge variant="inverted">Depoimentos</Badge>

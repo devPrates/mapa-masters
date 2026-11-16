@@ -327,7 +327,7 @@ const masterList: Master[] = [
     instagram: 'objetivacontabil',
     youtube: '@dizaicontador',
     site: 'www.objetivacontabil.com.br',
-    foto: '/fotos-masters/Anthony_Eden_de_Mello_1786453024928.png',
+    foto: '/fotos-masters/Anthony_Eden_de_Mello_1786453024928.jpg',
     logo: '/logos-masters/Objetiva_Contabil_logo_1786453028165.png',
   },
   {

@@ -26,8 +26,8 @@ const features = [
 
 export function ProgramaStats() {
   return (
-    <section id="resultados" className="scroll-mt-24 bg-ccd-mist py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-4 md:px-8">
+    <section id="resultados" className="flex min-h-svh flex-col justify-center scroll-mt-24 bg-ccd-mist py-20 md:py-28">
+      <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
         <Reveal className="text-center">
           <div className="flex justify-center">
             <Badge variant="gold">Resultados do programa CCD</Badge>

@@ -1,3 +1,4 @@
+import { Query } from '@lucasmarkes/hairline/react'
 import Link from 'next/link'
 
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from '@/components/ui/accordion'
@@ -34,9 +35,15 @@ const faqs = [
 
 export function Faq() {
   return (
-    <section id="faq" className="scroll-mt-24 bg-white py-20 md:py-28">
-      <div className="mx-auto max-w-3xl px-4 md:px-8">
+    <section id="faq" className="flex min-h-svh flex-col justify-center scroll-mt-24 bg-white py-20 md:py-28">
+      <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
         <Reveal className="text-center">
+          <Query
+            theme="light"
+            intensity={0.75}
+            label="Ponto de interrogação 3D que gira em direção ao cursor"
+            className="hairline-ccd-light mx-auto -mb-2 w-44 md:w-52"
+          />
           <div className="flex justify-center">
             <Badge variant="teal">Perguntas frequentes</Badge>
           </div>

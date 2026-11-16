@@ -238,3 +238,95 @@
     transform: translateY(3px);
   }
 }
+
+/* Hairline (@lucasmarkes/hairline) na paleta CCD.
+   --hairline-plate precisa ser IGUAL ao fundo onde a figura está,
+   senão as placas aparecem como blocos. */
+.hairline-ccd-dark {
+  --hairline-plate: var(--ccd-navy);
+  --hairline-hi: var(--ccd-gold-light); /* o que está "aceso" */
+  --hairline-edge: #7fd3df; /* silhuetas: teal claro */
+  --hairline-mid: var(--ccd-teal);
+  --hairline-lo: #0d3557; /* o que recua */
+  --hairline-stroke: 1;
+}
+
+.hairline-ccd-light {
+  --hairline-plate: #ffffff;
+  --hairline-hi: var(--ccd-gold);
+  --hairline-edge: var(--ccd-navy);
+  --hairline-mid: var(--ccd-teal);
+  --hairline-lo: var(--ccd-teal-mist);
+  --hairline-stroke: 1;
+}
+
+/* Preloader "CCD Master" (components/site/preloader.tsx + lib/preloader.ts).
+   data-js / data-preloaded são setados no <html> por um script inline no <head>,
+   antes da primeira pintura — assim nada pisca. */
+html:not([data-js]) [data-preloader],
+html[data-preloaded] [data-preloader] {
+  display: none;
+}
+
+/* Enquanto o preloader roda, o span real fica escondido: quem aparece é o
+   "CCD Master" voando. Ele surge no mesmo frame em que o voo termina. */
+html[data-js]:not([data-preloaded]) [data-hero-brand] {
+  opacity: 0;
+}
+
+/* Itens da hero começam escondidos só quando há JS (GSAP faz a entrada). */
+html[data-js] [data-hero-item],
+html[data-js] [data-hero-fade] {
+  opacity: 0;
+}
+
+/* Intro do preloader em CSS puro: começa na primeira pintura, antes do JS,
+   e só usa transform/opacity (roda no compositor). O GSAP anima apenas os
+   wrappers externos, então não há conflito. */
+@keyframes pl-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pl-brand {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.18em, 0) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pl-in-tag {
+  animation: pl-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+.pl-in-brand {
+  animation: pl-brand 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+.pl-in-meter {
+  animation: pl-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-in-tag,
+  .pl-in-brand,
+  .pl-in-meter {
+    animation-name: none;
+  }
+}
+
+/* Perfil do Master (components/master-page/master-hero.tsx): começa escondido
+   só com JS — o GSAP faz a entrada. Sem JS, tudo aparece normal. */
+html[data-js] [data-mh-item],
+html[data-js] [data-mh-name],
+html[data-js] [data-mh-avatar] {
+  opacity: 0;
+}

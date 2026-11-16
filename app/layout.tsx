@@ -3,6 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import { Quicksand } from 'next/font/google'
 import './globals.css'
 
+import { PRELOADER_INLINE_SCRIPT } from '@/lib/preloader'
+
 const quicksand = Quicksand({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
@@ -47,7 +49,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={quicksand.variable}>
+    // suppressHydrationWarning: o script abaixo adiciona data-js/data-preloaded
+    // no <html> antes do React hidratar.
+    <html lang="pt-BR" className={quicksand.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: PRELOADER_INLINE_SCRIPT }} />
+      </head>
       <body className="antialiased font-sans bg-white text-ccd-ink">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

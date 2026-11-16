@@ -39,31 +39,58 @@ export function BrazilMap({ selectedState, onStateChange }: BrazilMapProps) {
     selectedStateRef.current = selectedState;
   }, [selectedState]);
 
+  // Observer do watermark: guardado para desligar ao desmontar.
+  const watermarkObserver = useRef<MutationObserver | null>(null);
+
   useEffect(() => {
-    // Load map scripts
-    const script1 = document.createElement('script');
-    script1.src = '/mapdata.js';
-    script1.async = true;
+    const container = mapContainer.current;
+    if (!container) return;
+    const w = window as any;
 
-    const script2 = document.createElement('script');
-    script2.src = '/countrymap.js';
-    script2.async = true;
+    const boot = () => {
+      if (mapInitialized.current) return;
+      mapInitialized.current = true;
 
-    script1.onload = () => {
-      script2.onload = () => {
-        if (mapContainer.current && !mapInitialized.current) {
-          initializeMap();
-          mapInitialized.current = true;
-        }
+      // Voltando para a home (navegação interna): os scripts já estão na
+      // página — só reconfigura e redesenha, sem baixar/executar 440 KB de novo.
+      if (w.simplemaps_countrymap_mapdata && typeof w.simplemaps_countrymap?.load === 'function') {
+        initializeMap();
+        w.simplemaps_countrymap.load();
+        return;
+      }
+
+      // Primeira vez: baixa os dois scripts EM PARALELO; async=false garante
+      // que executam na ordem (mapdata antes do countrymap).
+      const mapdataScript = document.createElement('script');
+      mapdataScript.src = '/mapdata.js';
+      mapdataScript.async = false;
+
+      const countryScript = document.createElement('script');
+      countryScript.src = '/countrymap.js';
+      countryScript.async = false;
+      countryScript.onload = () => {
+        if (mapContainer.current) initializeMap();
       };
-      document.body.appendChild(script2);
+
+      document.body.append(mapdataScript, countryScript);
     };
 
-    document.body.appendChild(script1);
+    // Só carrega o mapa (countrymap.js tem ~440 KB) quando a seção estiver
+    // chegando perto da tela — não compete com o preloader e a hero.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          boot();
+        }
+      },
+      { rootMargin: '800px 0px' },
+    );
+    observer.observe(container);
 
     return () => {
-      if (script1.parentNode) script1.parentNode.removeChild(script1);
-      if (script2.parentNode) script2.parentNode.removeChild(script2);
+      observer.disconnect();
+      watermarkObserver.current?.disconnect();
     };
   }, []);
 
@@ -89,6 +116,11 @@ export function BrazilMap({ selectedState, onStateChange }: BrazilMapProps) {
     mapdata.main_settings.no_logo = 'yes';
     mapdata.main_settings.show_logo = 'no';
 
+    // O mapdata.js padrão do Simplemaps traz um marcador "Brasília" (quadrado
+    // rosa #FF0067, 25px) bem em cima do DF. Como o DF é minúsculo, o marcador
+    // cobre o estado inteiro e intercepta o clique. Não usamos marcadores.
+    mapdata.locations = {};
+
     // Setup state colors - states with Masters get the full teal tone,
     // states without get a muted tint of the same hue
     const statesWithMasters = new Set(Object.keys(masters));
@@ -102,10 +134,8 @@ export function BrazilMap({ selectedState, onStateChange }: BrazilMapProps) {
       stateData.url = '';
     });
 
-    // Load the map
-    if (typeof (window as any).simplemaps_countrymap === 'function') {
-      (window as any).simplemaps_countrymap(mapdata);
-    }
+    // O desenho em si é feito pelo próprio countrymap.js (auto_load) na
+    // primeira vez, ou pelo .load() no boot quando os scripts já existiam.
 
     setIsLoading(false);
 
@@ -133,6 +163,8 @@ export function BrazilMap({ selectedState, onStateChange }: BrazilMapProps) {
     const observer = new MutationObserver(() => {
       hideWatermark();
     });
+    watermarkObserver.current?.disconnect();
+    watermarkObserver.current = observer;
     
     setTimeout(() => {
       const mapInner = document.querySelector('#map_inner');

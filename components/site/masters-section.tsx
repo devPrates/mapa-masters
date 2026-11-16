@@ -8,8 +8,8 @@ export function MastersSection() {
   const statesWithMasters = Object.values(masters).filter((list) => list.length > 0).length
 
   return (
-    <section id="masters" className="scroll-mt-24 bg-white pt-16 md:pt-24">
-      <div className="mx-auto max-w-6xl px-4 pb-2 text-center md:px-8">
+    <section id="masters" className="flex min-h-svh flex-col justify-center scroll-mt-24 bg-white pt-16 md:pt-24">
+      <div className="mx-auto w-full max-w-6xl px-4 pb-2 text-center md:px-8">
         <Reveal className="flex justify-center">
           <Badge variant="navy">Mapa de Masters</Badge>
         </Reveal>
